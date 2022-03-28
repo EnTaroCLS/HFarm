@@ -15,11 +15,13 @@ namespace HFarm.Inventory
         private void OnEnable()
         {
             EventHandler.DropItemEvent += OnDropItemEvevt;
+            EventHandler.HarvestAtPlayerPosition += OnHarvestAtPlayerPosition;
         }
 
         private void OnDisable()
         {
             EventHandler.DropItemEvent -= OnDropItemEvevt;
+            EventHandler.HarvestAtPlayerPosition -= OnHarvestAtPlayerPosition;
         }
 
         private void Start()
@@ -37,6 +39,14 @@ namespace HFarm.Inventory
             RemoveItem(ID, 1);
         }
 
+        private void OnHarvestAtPlayerPosition(int ID)
+        {
+            int index = GetItemIndexInBag(ID);
+            AddItemAtIndex(ID, index, 1);
+            // 更新UI
+            EventHandler.CallUpdateInventoryUI(InventoryLocation.Player, playerBag.itemList);
+        }
+
         /// <summary>
         /// 添加物品到背包
         /// </summary>
@@ -51,7 +61,7 @@ namespace HFarm.Inventory
             {
                 Destroy(item.gameObject);
             }
-
+            // 更新UI
             EventHandler.CallUpdateInventoryUI(InventoryLocation.Player, playerBag.itemList);
         }
 

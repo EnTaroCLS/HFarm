@@ -387,12 +387,39 @@ MonoBehaviour:
   - partType: 1
     partName: 2
     overrideController: {fileID: 22100000, guid: 6151e5a66fbe9cf489c591749ff53047, type: 2}
+  - partType: 4
+    partName: 2
+    overrideController: {fileID: 22100000, guid: 27973576b003b6c4ea895ba7096d9ffe, type: 2}
+  - partType: 6
+    partName: 2
+    overrideController: {fileID: 22100000, guid: c981a966e99ae7a41ae26739fcd11d0c, type: 2}
   - partType: 0
     partName: 3
     overrideController: {fileID: 22100000, guid: ab60d9a6fb34064488d6d5bca8115b36, type: 2}
   - partType: 2
     partName: 3
     overrideController: {fileID: 22100000, guid: 0c908bdb6cdce2d49a1f2fc66cef4fe4, type: 2}
+  - partType: 4
+    partName: 3
+    overrideController: {fileID: 22100000, guid: db45b82737f8b3d4db9f8bc0804bece1, type: 2}
+  - partType: 0
+    partName: 1
+    overrideController: {fileID: 22100000, guid: b0ba224c55321324ca1de22f330ec9d3, type: 2}
+  - partType: 4
+    partName: 1
+    overrideController: {fileID: 22100000, guid: 52b370e7687fbc249b9da7046423523b, type: 2}
+  - partType: 6
+    partName: 1
+    overrideController: {fileID: 22100000, guid: b0c2a4f1ef29ed943b99144e0ff61053, type: 2}
+  - partType: 0
+    partName: 0
+    overrideController: {fileID: 22100000, guid: 599231c1774379b41a64da80c6640bba, type: 2}
+  - partType: 4
+    partName: 0
+    overrideController: {fileID: 22100000, guid: 6e0b808e61d5b1d48a3c5c75ebf949ae, type: 2}
+  - partType: 6
+    partName: 0
+    overrideController: {fileID: 22100000, guid: 38c7a14f6c0ae234c94447d774912e5c, type: 2}
 --- !u!1 &250791818
 GameObject:
   m_ObjectHideFlags: 3
@@ -1100,7 +1127,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 1.3333334, y: 1}
+    m_SensorSize: {x: 1.7777778, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0

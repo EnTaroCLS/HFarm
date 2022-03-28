@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using HFarm.CropPlant;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -82,6 +81,11 @@ public class CursorManager : MonoBehaviour
         currentGrid = FindObjectOfType<Grid>();
     }
 
+    /// <summary>
+    /// 物品选择事件函数
+    /// </summary>
+    /// <param name="itemDetails"></param>
+    /// <param name="isSelected"></param>
     private void OnItemSelectedEvent(ItemDetails itemDetails, bool isSelected)
     {
         if (!isSelected)
@@ -103,24 +107,35 @@ public class CursorManager : MonoBehaviour
                 ItemType.BreakTool => tool,
                 ItemType.ReapTool => tool,
                 ItemType.Furniture => tool,
+                ItemType.CollectTool => tool,
                 _ => normal
             };
             cursorEnable = true;
         }
     }
 
+    /// <summary>
+    /// 设置鼠标指针图片
+    /// </summary>
+    /// <param name="sprite"></param>
     private void SetCursorImage(Sprite sprite)
     {
         cursorImage.sprite = sprite;
         cursorImage.color = new Color(1, 1, 1, 1);
     }
 
+    /// <summary>
+    /// 设置鼠标指针为可用
+    /// </summary>
     private void SetCursorValid()
     {
         cursorPositionValid = true;
         cursorImage.color = new Color(1, 1, 1, 1);
     }
 
+    /// <summary>
+    /// 设置鼠标指针为不可用
+    /// </summary>
     private void SetCursorInValid()
     {
         cursorPositionValid = false;
@@ -142,6 +157,8 @@ public class CursorManager : MonoBehaviour
         TileDetails currentTile = GridMapManager.Instance.GetTileDetailsOnMousePosition(mouseGridPos);
         if (currentTile != null)
         {
+            CropDetails currentCrop = CropManager.Instance.GetCropDetails(currentTile.seedItemID);
+            
             // WORKFLOW: 补充所有物品类型的判断
             switch (currentItem.itemType)
             {
@@ -157,6 +174,15 @@ public class CursorManager : MonoBehaviour
                 case ItemType.WaterTool:
                     if (currentTile.daysSinceDig > -1 && currentTile.daysSinceWatered == -1)
                         SetCursorValid(); else SetCursorInValid();
+                    break;
+                case ItemType.CollectTool:
+                    if (currentCrop != null)
+                    {
+                        if (currentCrop.CheckToolAvailable(currentItem.itemID))
+                            if (currentTile.growthDays >= currentCrop.TotalGrowthDays) SetCursorValid(); else SetCursorInValid();
+                    }
+                    else
+                        SetCursorInValid();
                     break;
             }
         }
