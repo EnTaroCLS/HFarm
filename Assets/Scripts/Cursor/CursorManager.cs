@@ -97,6 +97,7 @@ public class CursorManager : MonoBehaviour
         else
         {
             currentItem = itemDetails;
+            // WORKFLOW: 添加所有类型对应图片
             currentSprite = itemDetails.itemType switch
             {
                 ItemType.Seed => seed,
@@ -158,6 +159,7 @@ public class CursorManager : MonoBehaviour
         if (currentTile != null)
         {
             CropDetails currentCrop = CropManager.Instance.GetCropDetails(currentTile.seedItemID);
+            Crop crop = GridMapManager.Instance.GetCropObject(mouseWorldPos);
             
             // WORKFLOW: 补充所有物品类型的判断
             switch (currentItem.itemType)
@@ -175,6 +177,15 @@ public class CursorManager : MonoBehaviour
                     if (currentTile.daysSinceDig > -1 && currentTile.daysSinceWatered == -1)
                         SetCursorValid(); else SetCursorInValid();
                     break;
+                case ItemType.BreakTool:
+                case ItemType.ChopTool:
+                    if (crop != null)
+                    {
+                        if (crop.CanHarvest && crop.cropDetails.CheckToolAvailable(currentItem.itemID)) SetCursorValid(); else SetCursorInValid();
+                    }
+                    else
+                        SetCursorInValid();
+                    break;
                 case ItemType.CollectTool:
                     if (currentCrop != null)
                     {
@@ -183,6 +194,9 @@ public class CursorManager : MonoBehaviour
                     }
                     else
                         SetCursorInValid();
+                    break;
+                case ItemType.ReapTool:
+                    if (GridMapManager.Instance.HaveReapableItemsInRadius(mouseWorldPos, currentItem)) SetCursorValid(); else SetCursorInValid();
                     break;
             }
         }

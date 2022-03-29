@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
+using HFarm.CropPlant;
 
 namespace HFarm.Map
 {
@@ -18,6 +19,10 @@ namespace HFarm.Map
         public List<MapData_SO> mapDataList;
 
         private Dictionary<string, TileDetails> tileDetailsDict = new Dictionary<string, TileDetails>();
+        // 是否第一次加载
+        private Dictionary<string, bool> firstLoadDict = new Dictionary<string,bool>();
+
+        private List<ReapItem> itemInRadius;
 
         private Grid currentGrid;
 
@@ -43,6 +48,7 @@ namespace HFarm.Map
         {
             foreach (var mapData in mapDataList)
             {
+                firstLoadDict.Add(mapData.sceneName, true);
                 InitTileDetailsDict(mapData);
             }
         }
@@ -115,7 +121,13 @@ namespace HFarm.Map
             digTilemap = GameObject.FindWithTag("Dig").GetComponent<Tilemap>();
             waterTilemap = GameObject.FindWithTag("Water").GetComponent<Tilemap>();
 
-            DisplayMap(SceneManager.GetActiveScene().name);
+            if (firstLoadDict[SceneManager.GetActiveScene().name])
+            {
+                // 预先生成农作物
+                EventHandler.CallGenerateCropEvent();
+                firstLoadDict[SceneManager.GetActiveScene().name] = false;
+            }
+            RefreshMap();
         }
 
         /// <summary>
@@ -130,6 +142,7 @@ namespace HFarm.Map
 
             if (currentTile != null)
             {
+                Crop currentCrop = GetCropObject(mouseWorldPos);
                 // WORKFLOW: 物品使用实际功能
                 switch (itemDetails.itemType)
                 {
@@ -152,9 +165,24 @@ namespace HFarm.Map
                         currentTile.daysSinceWatered = 0;
                         //音效
                         break;
+                    case ItemType.BreakTool:
+                    case ItemType.ChopTool:
+                        currentCrop?.ProcessToolAction(itemDetails, currentCrop.tileDetails);
+                        break;
                     case ItemType.CollectTool:
-                        Crop currentCrop = GetCropObject(mouseWorldPos);
                         currentCrop.ProcessToolAction(itemDetails, currentTile);
+                        break;
+                    case ItemType.ReapTool:
+                        int reapCount = 0;
+                        for (int i = 0; i < itemInRadius.Count; i++)
+                        {
+                            EventHandler.CallParticaleEffectEvent(ParticaleEffectType.ReapableScenery, itemInRadius[i].transform.position + Vector3.up);
+                            itemInRadius[i].SpawnHarvestItems();
+                            Destroy(itemInRadius[i].gameObject);
+                            reapCount++;
+                            if (reapCount >= Settings.reapAmount)
+                                break;
+                        }
                         break;
                 }
 
@@ -167,7 +195,7 @@ namespace HFarm.Map
         /// </summary>
         /// <param name="mouseWorldPos">鼠标坐标</param>
         /// <returns></returns>
-        private Crop GetCropObject(Vector3 mouseWorldPos)
+        public Crop GetCropObject(Vector3 mouseWorldPos)
         {
             Collider2D[] colliders = Physics2D.OverlapPointAll(mouseWorldPos);
 
@@ -179,6 +207,35 @@ namespace HFarm.Map
                     currentCrop = colliders[i].GetComponent<Crop>();
             }
             return currentCrop;
+        }
+
+        /// <summary>
+        /// 返回工具范围内的杂草
+        /// </summary>
+        /// <param name="tool">物品信息</param>
+        /// <returns></returns>
+        public bool HaveReapableItemsInRadius(Vector3 mouseWorldPos, ItemDetails tool)
+        {
+            itemInRadius = new List<ReapItem>();
+
+            Collider2D[] colliders = new Collider2D[20];
+            Physics2D.OverlapCircleNonAlloc(mouseWorldPos, tool.itemUseRadius, colliders);
+
+            if (colliders.Length > 0)
+            {
+                for (int i = 0;i < colliders.Length; i++)
+                {
+                    if (colliders[i] != null)
+                    {
+                        if (colliders[i].GetComponent<ReapItem>())
+                        {
+                            var item = colliders[i].GetComponent<ReapItem>();
+                            itemInRadius.Add(item);
+                        }
+                    }
+                }
+            }
+            return itemInRadius.Count > 0;
         }
 
         /// <summary>
@@ -241,7 +298,7 @@ namespace HFarm.Map
         /// 更新瓦片信息
         /// </summary>
         /// <param name="tileDetails"></param>
-        private void UpdateTileDetails(TileDetails tileDetails)
+        public void UpdateTileDetails(TileDetails tileDetails)
         {
             string key = tileDetails.gridX + "x" + tileDetails.gridY + "y" + SceneManager.GetActiveScene().name;
             if (tileDetailsDict.ContainsKey(key))

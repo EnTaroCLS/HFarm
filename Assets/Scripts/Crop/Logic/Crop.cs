@@ -5,8 +5,13 @@ using UnityEngine;
 public class Crop : MonoBehaviour
 {
     public CropDetails cropDetails;
-    private TileDetails tileDetails;
+    public TileDetails tileDetails;
     private int harvestActionCount;
+    public bool CanHarvest => tileDetails.growthDays >= cropDetails.TotalGrowthDays;
+
+    private Animator anim;
+
+    private Transform PlayerTransform => FindObjectOfType<Player>().transform;
 
     public void ProcessToolAction(ItemDetails tool, TileDetails tile)
     {
@@ -16,27 +21,72 @@ public class Crop : MonoBehaviour
         int requireActionCount = cropDetails.GetTotalRequireCount(tool.itemID);
         if (requireActionCount == -1) return;
 
-        //判断是否有动画 树木
+        anim = GetComponentInChildren<Animator>();
 
         //点击计数器
         if (harvestActionCount < requireActionCount)
         {
             harvestActionCount++;
 
+            //判断是否有动画 树木
+            if (anim != null && cropDetails.hasAnimation)
+            {
+                if (PlayerTransform.position.x < transform.position.x)
+                    anim.SetTrigger("RotateRight");
+                else
+                    anim.SetTrigger("RotateLeft");
+            }
             //播放粒子
+            if (cropDetails.hasParticalEffect)
+                EventHandler.CallParticaleEffectEvent(cropDetails.effectType, transform.position + cropDetails.effectPos);
             //播放声音
         }
 
         if (harvestActionCount >= requireActionCount)
         {
-            if (cropDetails.generateAtPlayerPosition)
+            if (cropDetails.generateAtPlayerPosition || !cropDetails.hasAnimation)
             {
                 //生成农作物
                 SpawnHarvestItems();
             }
+            else if (cropDetails.hasAnimation)
+            {
+                if (PlayerTransform.position.x < transform.position.x)
+                    anim.SetTrigger("FallingRight");
+                else
+                    anim.SetTrigger("FallingLeft");
+                StartCoroutine(HarvestAfterAnimation());
+            }
         }
     }
 
+    private IEnumerator HarvestAfterAnimation()
+    {
+        while (!anim.GetCurrentAnimatorStateInfo(0).IsName("END"))
+        {
+            yield return null;
+        }
+        SpawnHarvestItems();
+        //转换新物体
+        if (cropDetails.transferItemID > 0)
+        {
+            Debug.Log("1111111111");
+            CreateTransferCrop();
+        }
+    }
+
+    private void CreateTransferCrop()
+    {
+        tileDetails.seedItemID = cropDetails.transferItemID;
+        tileDetails.daysSinceLastHarvest = -1;
+        tileDetails.growthDays = 0;
+
+        EventHandler.CallRefreshCurrentMap();
+    }
+
+    /// <summary>
+    /// 生成果实
+    /// </summary>
     public void SpawnHarvestItems()
     {
         for (int i = 0; i < cropDetails.producedItemID.Length; i++)
@@ -62,7 +112,13 @@ public class Crop : MonoBehaviour
                 }
                 else // 在世界地图上生成物品
                 {
+                    //判断应该生成的物品方向
+                    var dirX = transform.position.x > PlayerTransform.position.x ? 1 : -1;
+                    //一定范围内的随机
+                    var spawnPos = new Vector3(transform.position.x + Random.Range(dirX, cropDetails.spawnRadius.x * dirX),
+                    transform.position.y + Random.Range(-cropDetails.spawnRadius.y, cropDetails.spawnRadius.y), 0);
 
+                    EventHandler.CallInstantiateItemInSence(cropDetails.producedItemID[i], spawnPos);
                 }
             }
         }

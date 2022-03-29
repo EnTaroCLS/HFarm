@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HFarm.CropPlant;
 
 namespace HFarm.Inventory
 {
@@ -30,13 +31,21 @@ namespace HFarm.Inventory
 
             itemDetails = InventoryManager.Instance.GetItemDetails(itemID);
 
-            if (itemDetails == null)
-                return;
-            spriteRenderer.sprite = itemDetails.itemOnWorldSprite != null ? itemDetails.itemOnWorldSprite : itemDetails.itemIcon;
+            if (itemDetails != null)
+            {
+                spriteRenderer.sprite = itemDetails.itemOnWorldSprite != null ? itemDetails.itemOnWorldSprite : itemDetails.itemIcon;
 
-            Vector2 newSize = new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y);
-            collider.size = newSize;
-            collider.offset = new Vector2(0, spriteRenderer.sprite.bounds.center.y);
+                Vector2 newSize = new Vector2(spriteRenderer.sprite.bounds.size.x, spriteRenderer.sprite.bounds.size.y);
+                collider.size = newSize;
+                collider.offset = new Vector2(0, spriteRenderer.sprite.bounds.center.y);
+            }
+            
+            if (itemDetails.itemType == ItemType.ReapableScenery)
+            {
+                gameObject.AddComponent<ReapItem>();
+                gameObject.GetComponent<ReapItem>().InitCropData(itemDetails.itemID);
+                gameObject.AddComponent<ItemInteractive>();
+            }
         }
     }
 }

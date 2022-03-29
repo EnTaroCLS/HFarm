@@ -100,4 +100,16 @@ public static class EventHandler
     {
         RefreshCurrentMap?.Invoke();
     }
+
+    public static event Action<ParticaleEffectType, Vector3> ParticaleEffectEvent;
+    public static void CallParticaleEffectEvent(ParticaleEffectType effectType, Vector3 pos)
+    {
+        ParticaleEffectEvent?.Invoke(effectType, pos);
+    }
+
+    public static event Action GenerateCropEvent;
+    public static void CallGenerateCropEvent()
+    {
+        GenerateCropEvent?.Invoke();
+    }
 }
