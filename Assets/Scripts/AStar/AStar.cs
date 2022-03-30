@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace HFarm.AStar
 {
-    public class AStar : MonoBehaviour
+    public class AStar : Singleton<AStar>
     {
         private GridNodes gridNodes;
         private Node startNode;

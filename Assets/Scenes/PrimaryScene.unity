@@ -1010,7 +1010,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 631063631}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.49, y: -2.56, z: 0}
+  m_LocalPosition: {x: -2.21, y: -2.56, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1149,9 +1149,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ecafc6bc5cda4342819e7910f5f856c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentScene: 02.Home
+  scheduleData: {fileID: 11400000, guid: 3b41b67614d1e814abda382a3fa798a0, type: 2}
+  currentScene: 01.Field
   normalSpeed: 2
   isMoving: 0
+  blankAnimationClip: {fileID: 7400000, guid: 500fefed8113b4f7e8f2dc728631a63d, type: 2}
 --- !u!1 &654832850
 GameObject:
   m_ObjectHideFlags: 0
@@ -1509,17 +1511,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262677514}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 18aa6f9541a26144ba7d4b27c02ddb29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPos: {x: -16, y: -16}
-  finishPos: {x: 8, y: -16}
+  startPos: {x: -3, y: -3}
+  finishPos: {x: -1, y: -6}
   displayMap: {fileID: 936880105}
   displayTile: {fileID: 11400000, guid: 5741f70bd093241fa810e6cc0fae3f67, type: 2}
   displayStartAndFinish: 0
   displayPath: 0
+  npcMovement: {fileID: 631063637}
+  moveNPC: 0
+  targetScene: 02.Home
+  targetPos: {x: 6, y: -2}
+  stopClip: {fileID: 7400000, guid: 54d560542c0284c169c56cddc7145ac6, type: 2}
 --- !u!114 &1262677517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1544,6 +1551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d4d2eb0544086148936809f7d9784ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneRouteData: {fileID: 0}
   npcPositionList:
   - npc: {fileID: 631063632}
     startScene: 01.Field
@@ -2140,7 +2148,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!156049354 &2061418316
 Grid:
   m_ObjectHideFlags: 0
