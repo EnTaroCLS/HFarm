@@ -104,7 +104,14 @@ namespace HFarm.Inventory
                 {
                     InventoryManager.Instance.SwapItem(slotIndex, targetIndex);
                 }
-
+                else if (slotType == SlotType.Shop && targetSlot.slotType == SlotType.Bag)
+                {
+                    EventHandler.CallShowTradeUI(itemDetails, false);
+                }
+                else if (slotType == SlotType.Bag && targetSlot.slotType == SlotType.Shop)
+                {
+                    EventHandler.CallShowTradeUI(itemDetails, true);
+                }
                 inventoryUI.UpdateSlotHightlight(-1);
             }
             /*else

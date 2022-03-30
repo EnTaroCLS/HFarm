@@ -41,6 +41,7 @@ public class NPCMovement : MonoBehaviour
     private bool isInitialised;
     private bool npcMove;
     private bool sceneLoaded;
+    public bool interactable;
 
     // ¶¯»­¼ÆÊ±Æ÷
     private float animationBreaktime;
@@ -236,6 +237,7 @@ public class NPCMovement : MonoBehaviour
         currentSchedule = schedule;
         tragetGridPosition = (Vector3Int)schedule.targetGridPosition;
         stopAnimationClip = schedule.clipAtStop;
+        this.interactable = schedule.interactable;
 
         if (schedule.targetScene == currentScene)
         {

@@ -38,6 +38,8 @@ namespace HFarm.CropPlant
                 if (tile == null)
                 {
                     tile = new TileDetails();
+                    tile.gridX = cropGridPos.x;
+                    tile.gridY = cropGridPos.y;
                 }
 
                 tile.daysSinceWatered = -1;

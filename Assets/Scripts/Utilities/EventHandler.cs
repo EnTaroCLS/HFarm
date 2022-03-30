@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HFarm.Dialogue;
 
 public static class EventHandler
 {
@@ -111,5 +112,35 @@ public static class EventHandler
     public static void CallGenerateCropEvent()
     {
         GenerateCropEvent?.Invoke();
+    }
+
+    public static event Action<DialoguePiece> ShowDialogueEvent;
+    public static void CallShowDialogueEvent(DialoguePiece dialoguePiece)
+    {
+        ShowDialogueEvent?.Invoke(dialoguePiece);
+    }
+
+    public static event Action<SlotType, InventoryBag_SO> BaseBagOpenEvent;
+    public static void CallBaseBagOpenEvent(SlotType slotType, InventoryBag_SO bag_SO)
+    {
+        BaseBagOpenEvent?.Invoke(slotType, bag_SO);
+    }
+
+    public static event Action<SlotType, InventoryBag_SO> BaseBagCloseEvent;
+    public static void CallBaseBagCloseEvent(SlotType slotType, InventoryBag_SO bag_SO)
+    {
+        BaseBagCloseEvent?.Invoke(slotType, bag_SO);
+    }
+
+    public static event Action<GameState> UpdateGameStateEvent;
+    public static void CallUpdateGameStateEvent(GameState state)
+    {
+        UpdateGameStateEvent?.Invoke(state);
+    }
+
+    public static event Action<ItemDetails, bool> ShowTradeUI;
+    public static void CallShowTradeUI(ItemDetails item, bool isSell)
+    {
+        ShowTradeUI?.Invoke(item, isSell);
     }
 }
