@@ -8,6 +8,8 @@ namespace HFarm.Inventory
     {
         [Header("物品数据")]
         public ItemDataList_SO itemDataList_SO;
+        [Header("建造蓝图")]
+        public BluePrintDataList_SO bluePrintData;
         [Header("背包数据")]
         public InventoryBag_SO playerBag;
         [Header("交易")]
@@ -17,17 +19,29 @@ namespace HFarm.Inventory
         {
             EventHandler.DropItemEvent += OnDropItemEvevt;
             EventHandler.HarvestAtPlayerPosition += OnHarvestAtPlayerPosition;
+            EventHandler.BulidFurniturnEvent += OnBulidFurniturnEvent;
         }
 
         private void OnDisable()
         {
             EventHandler.DropItemEvent -= OnDropItemEvevt;
             EventHandler.HarvestAtPlayerPosition -= OnHarvestAtPlayerPosition;
+            EventHandler.BulidFurniturnEvent -= OnBulidFurniturnEvent;
         }
 
         private void Start()
         {
             EventHandler.CallUpdateInventoryUI(InventoryLocation.Player, playerBag.itemList);
+        }
+
+        private void OnBulidFurniturnEvent(int ID, Vector3 mousePos)
+        {
+            RemoveItem(ID, 1);
+            BluePrintDetails bluePrint = bluePrintData.GetBluePrintDetails(ID);
+            foreach (var item in bluePrint.resourceItem)
+            {
+                RemoveItem(item.itemID, item.itemAmount);
+            }
         }
 
         public ItemDetails GetItemDetails(int ID)
@@ -202,6 +216,28 @@ namespace HFarm.Inventory
             }
             //刷新UI
             EventHandler.CallUpdateInventoryUI(InventoryLocation.Player, playerBag.itemList);
+        }
+
+        /// <summary>
+        /// 检查建造资源物品库存
+        /// </summary>
+        /// <param name="ID">图纸ID</param>
+        /// <returns></returns>
+        public bool CheckStack(int ID)
+        {
+            var bluePrintDetails = bluePrintData.GetBluePrintDetails(ID);
+
+            foreach (var resourceItem in bluePrintDetails.resourceItem)
+            {
+                var itemStock = playerBag.GetInventoryItem(resourceItem.itemID);
+                if (itemStock.itemAmount >= resourceItem.itemAmount)
+                {
+                    continue;
+                }
+                else
+                    return false;
+            }
+            return true;
         }
     }
 }

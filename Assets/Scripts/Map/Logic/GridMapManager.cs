@@ -184,6 +184,9 @@ namespace HFarm.Map
                                 break;
                         }
                         break;
+                    case ItemType.Furniture:
+                        EventHandler.CallBulidFurniturnEvent(itemDetails.itemID, mouseWorldPos);
+                        break;
                 }
 
                 UpdateTileDetails(currentTile);

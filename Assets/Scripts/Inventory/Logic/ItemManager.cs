@@ -21,6 +21,7 @@ namespace HFarm.Inventory
             EventHandler.DropItemEvent += OnDropItemEvevt;
             EventHandler.BeforeSceneUnloadEvent += OnBeforeSceneUnloadEvent;
             EventHandler.AfterSceneLoadedEvent += OnAfterSceneUnloadEvent;
+            EventHandler.BulidFurniturnEvent += OnBulidFurniturnEvent;
         }
 
         private void OnDisable()
@@ -29,6 +30,13 @@ namespace HFarm.Inventory
             EventHandler.DropItemEvent -= OnDropItemEvevt;
             EventHandler.BeforeSceneUnloadEvent -= OnBeforeSceneUnloadEvent;
             EventHandler.AfterSceneLoadedEvent -= OnAfterSceneUnloadEvent;
+            EventHandler.BulidFurniturnEvent -= OnBulidFurniturnEvent;
+        }
+
+        private void OnBulidFurniturnEvent(int ID, Vector3 mousePos)
+        {
+            BluePrintDetails bluePrint = InventoryManager.Instance.bluePrintData.GetBluePrintDetails(ID);
+            var bulidItem = Instantiate(bluePrint.buildPrefab, mousePos, Quaternion.identity, itemParent);
         }
 
         private void OnBeforeSceneUnloadEvent()
