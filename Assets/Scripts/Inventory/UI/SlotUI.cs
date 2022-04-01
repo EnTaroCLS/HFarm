@@ -21,6 +21,19 @@ namespace HFarm.Inventory
         public ItemDetails itemDetails;
         public int itemAmount;
 
+        public InventoryLocation Location
+        {
+            get
+            {
+                return slotType switch
+                {
+                    SlotType.Bag => InventoryLocation.Player,
+                    SlotType.Box => InventoryLocation.Box,
+                    _ => InventoryLocation.Player
+                };
+            }
+        }
+
         public InventoryUI inventoryUI => GetComponentInParent<InventoryUI>();
 
         private void Start()
@@ -111,6 +124,11 @@ namespace HFarm.Inventory
                 else if (slotType == SlotType.Bag && targetSlot.slotType == SlotType.Shop)
                 {
                     EventHandler.CallShowTradeUI(itemDetails, true);
+                }
+                else if (slotType != SlotType.Shop && targetSlot.slotType != SlotType.Shop && slotType != targetSlot.slotType)
+                {
+                    // 跨背包交换数据
+                    InventoryManager.Instance.SwapItem(Location, slotIndex, targetSlot.Location, targetSlot.slotIndex);
                 }
                 inventoryUI.UpdateSlotHightlight(-1);
             }

@@ -10,21 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99e88ffc630bc5e419aa4f051129abde, type: 3}
-  m_Name: PlayerBag
+  m_Name: BoxBagTemplate
   m_EditorClassIdentifier: 
   itemList:
-  - itemID: 1036
-    itemAmount: 9
-  - itemID: 1001
-    itemAmount: 1
-  - itemID: 1013
-    itemAmount: 59
-  - itemID: 1029
-    itemAmount: 99
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 1037
-    itemAmount: 10
   - itemID: 0
     itemAmount: 0
   - itemID: 0
@@ -41,27 +29,3 @@ MonoBehaviour:
     itemAmount: 0
   - itemID: 0
     itemAmount: 0
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 1003
-    itemAmount: 2
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 1002
-    itemAmount: 5
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 0
-    itemAmount: 0
-  - itemID: 1002
-    itemAmount: 10
-  - itemID: 1004
-    itemAmount: 10

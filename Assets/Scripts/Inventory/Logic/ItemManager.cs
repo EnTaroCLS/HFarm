@@ -13,7 +13,10 @@ namespace HFarm.Inventory
 
         private Transform PlayerTransform => FindObjectOfType<Player>().transform;
 
+        // 记录场景Item
         private Dictionary<string, List<SceneItem>> sceneItemDict = new Dictionary<string, List<SceneItem>>();
+        // 记录场景家具
+        private Dictionary<string, List<SceneFurniture>> sceneFurnitureDict = new Dictionary<string, List<SceneFurniture>>();
 
         private void OnEnable()
         {
@@ -21,7 +24,7 @@ namespace HFarm.Inventory
             EventHandler.DropItemEvent += OnDropItemEvevt;
             EventHandler.BeforeSceneUnloadEvent += OnBeforeSceneUnloadEvent;
             EventHandler.AfterSceneLoadedEvent += OnAfterSceneUnloadEvent;
-            EventHandler.BulidFurniturnEvent += OnBulidFurniturnEvent;
+            EventHandler.BulidFurnitureEvent += OnBulidFureiturnEvent;
         }
 
         private void OnDisable()
@@ -30,24 +33,31 @@ namespace HFarm.Inventory
             EventHandler.DropItemEvent -= OnDropItemEvevt;
             EventHandler.BeforeSceneUnloadEvent -= OnBeforeSceneUnloadEvent;
             EventHandler.AfterSceneLoadedEvent -= OnAfterSceneUnloadEvent;
-            EventHandler.BulidFurniturnEvent -= OnBulidFurniturnEvent;
+            EventHandler.BulidFurnitureEvent -= OnBulidFureiturnEvent;
         }
 
-        private void OnBulidFurniturnEvent(int ID, Vector3 mousePos)
+        private void OnBulidFureiturnEvent(int ID, Vector3 mousePos)
         {
             BluePrintDetails bluePrint = InventoryManager.Instance.bluePrintData.GetBluePrintDetails(ID);
             var bulidItem = Instantiate(bluePrint.buildPrefab, mousePos, Quaternion.identity, itemParent);
+            if (bulidItem.GetComponent<Box>())
+            {
+                bulidItem.GetComponent<Box>().index = InventoryManager.Instance.BoxDataAmount;
+                bulidItem.GetComponent<Box>().InitBox(bulidItem.GetComponent<Box>().index);
+            }
         }
 
         private void OnBeforeSceneUnloadEvent()
         {
             GetAllSceneItems();
+            GetAllSceneFurniture();
         }
 
         private void OnAfterSceneUnloadEvent()
         {
             itemParent = GameObject.FindWithTag("ItemParent").transform;
             RecreateAllItems();
+            RebuildFurniture();
         }
 
         /// <summary>
@@ -118,6 +128,61 @@ namespace HFarm.Inventory
                     {
                         Item newItem = Instantiate(itemPrefab, item.position.ToVector3(), Quaternion.identity, itemParent);
                         newItem.Init(item.itemID);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获得场景所有家具
+        /// </summary>
+        private void GetAllSceneFurniture()
+        {
+            List<SceneFurniture> currentSceneFurniture = new List<SceneFurniture>();
+
+            foreach (var item in FindObjectsOfType<Furniture>())
+            {
+                SceneFurniture sceneFurniture = new SceneFurniture
+                {
+                    itemID = item.itemID,
+                    position = new SerializableVector3(item.transform.position)
+                };
+                if (item.GetComponent<Box>() != null)
+                    sceneFurniture.boxIndex = item.GetComponent<Box>().index;
+
+                currentSceneFurniture.Add(sceneFurniture);
+            }
+
+            if (sceneFurnitureDict.ContainsKey(SceneManager.GetActiveScene().name))
+            {
+                //找到数据就更新item数据列表
+                sceneFurnitureDict[SceneManager.GetActiveScene().name] = currentSceneFurniture;
+            }
+            else    //如果是新场景
+            {
+                sceneFurnitureDict.Add(SceneManager.GetActiveScene().name, currentSceneFurniture);
+            }
+        }
+
+        /// <summary>
+        /// 重建当前场景家具
+        /// </summary>
+        private void RebuildFurniture()
+        {
+            List<SceneFurniture> currentSceneFurniture = new List<SceneFurniture>();
+
+            if (sceneFurnitureDict.TryGetValue(SceneManager.GetActiveScene().name, out currentSceneFurniture))
+            {
+                if (currentSceneFurniture != null)
+                {
+                    foreach (SceneFurniture sceneFurniture in currentSceneFurniture)
+                    {
+                        BluePrintDetails bluePrint = InventoryManager.Instance.bluePrintData.GetBluePrintDetails(sceneFurniture.itemID);
+                        var bulidItem = Instantiate(bluePrint.buildPrefab, sceneFurniture.position.ToVector3(), Quaternion.identity, itemParent);
+                        if (bulidItem.GetComponent<Box>())
+                        {
+                            bulidItem.GetComponent<Box>().InitBox(sceneFurniture.boxIndex);
+                        }
                     }
                 }
             }

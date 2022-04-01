@@ -18,6 +18,7 @@ namespace HFarm.Inventory
         [Header("通用背包")]
         [SerializeField] private GameObject baseBag;
         public GameObject shopSlotPrefab;
+        public GameObject boxSlotPrefab;
 
         [Header("交易UI")]
         public TradeUI tradeUI;
@@ -94,6 +95,7 @@ namespace HFarm.Inventory
             GameObject prefab = slotType switch
             {
                 SlotType.Shop => shopSlotPrefab,
+                SlotType.Box => boxSlotPrefab,
                 _ => null,
             };
 
